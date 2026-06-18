@@ -1286,7 +1286,10 @@ export function createServer(config = loadConfig()): RunningServer {
   const reviewCheckpoints = createReviewCheckpointManager();
 
   if (config.logging.trustProxy) {
-    app.set("trust proxy", true);
+    // Use a hop count (1) instead of boolean true so express-rate-limit
+      // recognizes a single trusted reverse-proxy (e.g. Cloudflare Tunnel,
+      // ngrok) without raising ERR_ERL_PERMISSIVE_TRUST_PROXY.
+      app.set("trust proxy", 1);
   }
 
   app.use((req, res, next) => {
